@@ -1,8 +1,7 @@
-require('dotenv').config();
+require("dotenv").config()
 const express = require("express")
 const cors = require("cors")
 const { json } = require("express")
-
 
 const { randomRoute } = require("./routes/random.js")
 const { customRoute } = require("./routes/custom.js")
@@ -11,11 +10,22 @@ const { deleteRoute } = require("./routes/delete.js")
 const { infoRoute } = require("./routes/info.js")
 const { redirectRoute } = require("./routes/redirect.js")
 
+const origin = process.env.FRONTEND_URL
+
 const app = express()
+app.use(
+    cors({
+        origin: origin,
+    })
+)
+app.use(json())
+
 const port = process.env.PORT
 
-app.use(cors())
-app.use(json())
+//
+app.get("/", (req, res) => {
+    res.send("Backend is running OK")
+})
 
 // Create link with random code
 app.post("/random", randomRoute)
