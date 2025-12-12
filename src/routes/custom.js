@@ -26,7 +26,7 @@ async function customRoute(req, res) {
             return res.status(409).json({ error: "CODE_TAKEN" })
         }
 
-        console.error(`Error creating custom link: ${error}`)
+        console.error("Error creating custom link:", error.stack || error);
         res.status(500).json({ error: "SERVER_ERROR" })
     }
 }
