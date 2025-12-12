@@ -20,7 +20,7 @@ async function randomRoute(req, res) {
         res.status(201).json(shortLink)
     } catch (error) {
         console.error(`Error creating random link: ${error}`)
-        res.status(500).json({ error: "Internal Server Error" })
+        res.status(500).json({ error: "SERVER_ERROR" })
     }
 }
 
