@@ -17,13 +17,10 @@ async function randomRoute(req, res) {
 
     try {
         const shortLink = await createShortLink(url, code, password, false)
-        console.log(
-            `Short link created: http://localhost:${port}/${shortLink.code}`
-        )
         res.status(201).json(shortLink)
     } catch (error) {
         console.error(`Error creating random link: ${error}`)
-        res.status(500).json({ error: "Error creating short link" })
+        res.status(500).json({ error: "Internal Server Error", details: error.message })
     }
 }
 

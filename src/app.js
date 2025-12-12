@@ -14,12 +14,7 @@ const origin = process.env.FRONTEND_URL
 
 const app = express()
 
-app.use(
-    cors({
-        origin: origin,
-        methods: ["GET", "POST", "PUT", "DELETE"],
-    })
-)
+app.use("/", cors())
 app.use(json())
 
 const port = process.env.PORT
