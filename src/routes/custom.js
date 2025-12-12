@@ -20,9 +20,6 @@ async function customRoute(req, res) {
 
     try {
         const shortLink = await createShortLink(url, code, password, true)
-        console.log(
-            `Short link created: http://localhost:${port}/${shortLink.code}`
-        )
         res.status(201).json(shortLink)
     } catch (error) {
         if (error.message === "CODE_TAKEN") {
