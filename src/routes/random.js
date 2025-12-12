@@ -1,7 +1,7 @@
 const { isValidUrl, isValidPassword } = require("../validators")
 const { createShortLink } = require("../services")
 
-const port = process.env.PORT
+// const port = process.env.PORT
 
 async function randomRoute(req, res) {
     const { url, password } = req.body
@@ -20,7 +20,7 @@ async function randomRoute(req, res) {
         res.status(201).json(shortLink)
     } catch (error) {
         console.error(`Error creating random link: ${error}`)
-        res.status(500).json({ error: "Internal Server Error", details: error.message })
+        res.status(500).json({ error: "Internal Server Error" })
     }
 }
 
