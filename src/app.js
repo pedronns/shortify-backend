@@ -13,9 +13,13 @@ const { redirectRoute } = require("./routes/redirect.js")
 const origin = process.env.FRONTEND_URL
 
 const app = express()
+app.use(cors())
+
 app.use(
     cors({
         origin: origin,
+        methods: ["GET", "POST", "PUT", "DELETE"],
+        credentials: true,
     })
 )
 app.use(json())
