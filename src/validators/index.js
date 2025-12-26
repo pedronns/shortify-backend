@@ -7,15 +7,14 @@ function isValidUrl(str) {
     }
 }
 
-export function ensureProtocol(str) {
-    try {
-        const url = new URL(str)
-        return url.protocol === "http:" || url.protocol === "https:"
-            ? str
-            : `https://${str}`
-    } catch {
-        return `https://${str}`
+function treatUrl(url) {
+    const hasProtocol = /^https?:\/\//i.test(url)
+
+    if (hasProtocol) {
+        return url
     }
+
+    return `https://${url}`
 }
 
 function isValidCode(code) {
