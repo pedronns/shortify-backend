@@ -21,7 +21,7 @@ const port = process.env.PORT
 
 //
 app.get("/", (req, res) => {
-    res.send("Backend is running OK")
+    res.redirect(origin)
 })
 
 // Create link with random code
