@@ -5,7 +5,7 @@ dotenv.config()
 
 export async function connectDatabase() {
     const URI = process.env.MONGO_URI
-    console.log(URI)
+    console.log(URI ? 'URI resgatada' : 'URI não encontrada')
 
     try {
         await mongoose.connect(URI)
