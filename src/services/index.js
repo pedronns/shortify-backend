@@ -1,4 +1,4 @@
-import { Link } from "../database/models/Link.js"
+import { Link } from "../database/models/link.js"
 import bcrypt from "bcrypt"
 
 const API = process.env.API_URL

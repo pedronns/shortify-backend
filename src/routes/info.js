@@ -1,4 +1,4 @@
-import { Link } from "../database/models/Link.js"
+import { Link } from "../database/models/link.js"
 
 export async function infoRoute(req, res) {
     const { code } = req.params
