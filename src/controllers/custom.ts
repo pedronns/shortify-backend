@@ -1,11 +1,11 @@
-import { createShortLink } from "../services/index.js"
+import { createShortLink } from "../services/index.ts"
 import type { Request, Response } from "express"
 
 import {
     isValidUrl,
     isValidCode,
     isValidPassword,
-} from "../validators/index.js"
+} from "../validators/index.ts"
 
 export async function customController(req: Request, res: Response) {
     const { url, code, password } = req.body

@@ -1,7 +1,7 @@
-import { unlockLink } from "../services/index.js"
+import { unlockLink } from "../services/index.ts"
 import type { Request, Response } from "express"
 
-export async function unlockRoute(req: Request, res: Response) {
+export async function unlockController(req: Request, res: Response) {
     const { password } = req.body
     const { code } = req.params
 

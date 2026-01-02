@@ -1,4 +1,4 @@
-import { LinkModel } from "../database/models/link.js"
+import { LinkModel } from "../database/models/link.ts"
 import type { Request, Response } from "express"
 
 export async function deleteController(req: Request, res: Response) {

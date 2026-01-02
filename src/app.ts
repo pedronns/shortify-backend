@@ -3,14 +3,14 @@ import express from "express"
 import cors from "cors"
 import { json } from "express"
 
-import { connectDatabase } from "./database/index.js"
+import { connectDatabase } from "./database/index.ts"
 
-import { randomController } from "./controllers/random.js"
-import { customController } from "./controllers/custom.js"
-import { unlockController } from "./controllers/unlock.js"
-import { deleteController } from "./controllers/delete.js"
-import { infoController } from "./controllers/info.js"
-import { redirectController } from "./controllers/redirect.js"
+import { randomController } from "./controllers/random.ts"
+import { customController } from "./controllers/custom.ts"
+import { unlockController } from "./controllers/unlock.ts"
+import { deleteController } from "./controllers/delete.ts"
+import { infoController } from "./controllers/info.ts"
+import { redirectController } from "./controllers/redirect.ts"
 
 const origin = process.env.FRONTEND_URL || ''
 

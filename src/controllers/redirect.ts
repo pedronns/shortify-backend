@@ -1,4 +1,4 @@
-import { handleRedirect } from "../services/index.js"
+import { handleRedirect } from "../services/index.ts"
 import type { Request, Response } from "express"
 
 export async function redirectController(req: Request, res: Response) {

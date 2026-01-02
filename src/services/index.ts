@@ -1,5 +1,5 @@
-import { LinkModel } from "../database/models/link"
-import type { Link } from "../types/link"
+import { LinkModel } from "../database/models/link.ts"
+import type { Link } from "../types/link.ts"
 import bcrypt from "bcrypt"
 
 const API = process.env.API_URL

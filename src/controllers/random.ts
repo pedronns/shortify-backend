@@ -1,5 +1,5 @@
-import { isValidUrl, isValidPassword } from "../validators/index.js"
-import { createShortLink } from "../services/index.js"
+import { isValidUrl, isValidPassword } from "../validators/index.ts"
+import { createShortLink } from "../services/index.ts"
 
 import type { Request, Response } from "express"
 
