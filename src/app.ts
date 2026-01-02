@@ -38,10 +38,10 @@ app.post("/custom", customController)
 // redirecting Controller
 app.get("/:code", redirectController)
 
+app.post("/:code/unlock", unlockController)
+
 // checks if the link exists and if it's protected
 app.get("/info/:code", infoController)
-
-app.post("/:code/unlock", unlockController)
 
 app.delete("/:code", deleteController)
 

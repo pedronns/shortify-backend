@@ -73,7 +73,6 @@ async function unlockLink(code: string, password?: string): Promise<string> {
         throw new Error("NOT_PROTECTED")
     }
 
-
     const match = await bcrypt.compare(password, link.passwordHash)
 
     if (!match) {
@@ -83,7 +82,10 @@ async function unlockLink(code: string, password?: string): Promise<string> {
     return link.url
 }
 
-async function handleRedirect(code: string, password?: string): Promise<string> {
+async function handleRedirect(
+    code: string,
+    password?: string
+): Promise<string> {
     const link = await LinkModel.findOne({ code })
 
     if (!link) {
@@ -91,9 +93,7 @@ async function handleRedirect(code: string, password?: string): Promise<string> 
     }
 
     if (link.protected) {
-        if (!link.passwordHash || !password) {
-            throw new Error("NEED_PASSWORD")
-        }
+        if (!password || !link.passwordHash) throw new Error("NEED_PASSWORD")
 
         const match = bcrypt.compare(password, link.passwordHash)
         if (!match) {
