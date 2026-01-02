@@ -1,13 +1,23 @@
-import { Link } from "../database/models/link.js"
+import { LinkModel } from "../database/models/link"
+import type { Link } from "../types/link"
 import bcrypt from "bcrypt"
 
 const API = process.env.API_URL
 
-async function createShortLink(url, code, password, custom) {
+if (!API) {
+    throw new Error("UNDEFINED_URL")
+}
+
+async function createShortLink(
+    url: string,
+    code: string,
+    password: string,
+    custom: boolean
+): Promise<Link> {
     let passwordHash = null
     let isProtected = false
 
-    if (url.includes(API)) {
+    if (url.includes(API as string)) {
         throw new Error("RECURSIVE_LINK")
     }
 
@@ -17,7 +27,7 @@ async function createShortLink(url, code, password, custom) {
     }
 
     if (!custom) {
-        const urlTaken = await Link.findOne({
+        const urlTaken = await LinkModel.findOne({
             url,
             custom: false,
             protected: false,
@@ -33,12 +43,12 @@ async function createShortLink(url, code, password, custom) {
     }
 
     // if custom code, check if it's already taken
-    const codeTaken = await Link.findOne({ code })
+    const codeTaken = await LinkModel.findOne({ code })
     if (codeTaken) {
         throw new Error("CODE_TAKEN")
     }
 
-    const created = await Link.create({
+    const created = await LinkModel.create({
         url,
         code,
         passwordHash,
@@ -52,16 +62,17 @@ async function createShortLink(url, code, password, custom) {
     }
 }
 
-async function unlockLink(code, password) {
-    const link = await Link.findOne({ code })
+async function unlockLink(code: string, password?: string): Promise<string> {
+    const link = await LinkModel.findOne({ code })
 
     if (!link) {
         throw new Error("NOT_FOUND")
     }
 
-    if (!link.protected) {
+    if (!link.passwordHash || !password) {
         throw new Error("NOT_PROTECTED")
     }
+
 
     const match = await bcrypt.compare(password, link.passwordHash)
 
@@ -72,19 +83,19 @@ async function unlockLink(code, password) {
     return link.url
 }
 
-async function handleRedirect(code, password) {
-    const link = await Link.findOne({ code })
+async function handleRedirect(code: string, password?: string): Promise<string> {
+    const link = await LinkModel.findOne({ code })
 
     if (!link) {
         throw new Error("NOT_FOUND")
     }
 
     if (link.protected) {
-        if (!password) {
+        if (!link.passwordHash || !password) {
             throw new Error("NEED_PASSWORD")
         }
 
-        const match = await bcrypt.compare(password, link.passwordHash)
+        const match = bcrypt.compare(password, link.passwordHash)
         if (!match) {
             throw new Error("INVALID_PASSWORD")
         }

@@ -1,9 +1,9 @@
 import { isValidUrl, isValidPassword } from "../validators/index.js"
 import { createShortLink } from "../services/index.js"
 
-// const port = process.env.PORT
+import type { Request, Response } from "express"
 
-export async function randomRoute(req, res) {
+export async function randomController(req: Request, res: Response) {
     const { url, password } = req.body
     const code = Math.random().toString(36).slice(2, 10)
 

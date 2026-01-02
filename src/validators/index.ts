@@ -1,13 +1,13 @@
-function isValidUrl(str) {
+function isValidUrl(url: string) {
     try {
-        const { protocol } = new URL(str)
+        const { protocol } = new URL(url)
         return protocol === "http:" || protocol === "https:"
     } catch (_) {
         return false
     }
 }
 
-function treatUrl(url) {
+function treatUrl(url: string) {
     const hasProtocol = /^https?:\/\//i.test(url)
 
     if (hasProtocol) {
@@ -17,11 +17,11 @@ function treatUrl(url) {
     return `https://${url}`
 }
 
-function isValidCode(code) {
+function isValidCode(code: string) {
     return /^[a-zA-Z0-9_-]{6,20}$/.test(code)
 }
 
-function isValidPassword(password) {
+function isValidPassword(password: string) {
     const passwordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,50}$/
     return passwordRegex.test(password)

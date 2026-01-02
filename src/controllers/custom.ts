@@ -1,9 +1,13 @@
 import { createShortLink } from "../services/index.js"
-import { isValidUrl, isValidCode, isValidPassword } from "../validators/index.js"
+import type { Request, Response } from "express"
 
-const port = process.env.PORT
+import {
+    isValidUrl,
+    isValidCode,
+    isValidPassword,
+} from "../validators/index.js"
 
-export async function customRoute(req, res) {
+export async function customController(req: Request, res: Response) {
     const { url, code, password } = req.body
 
     if (!isValidUrl(url)) {
@@ -21,12 +25,14 @@ export async function customRoute(req, res) {
     try {
         const shortLink = await createShortLink(url, code, password, true)
         res.status(201).json(shortLink)
-    } catch (error) {
-        if (error.message === "CODE_TAKEN") {
-            return res.status(409).json({ error: "CODE_TAKEN" })
+    } catch (err) {
+        if (err instanceof Error) {
+            if (err.message === "CODE_TAKEN") {
+                return res.status(409).json({ error: "CODE_TAKEN" })
+            }
         }
 
-        console.error("Error creating custom link:", error.stack || error);
+        console.error("Error creating custom link:", err)
         res.status(500).json({ error: "SERVER_ERROR" })
     }
 }
