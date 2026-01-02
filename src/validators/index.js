@@ -27,4 +27,4 @@ function isValidPassword(password) {
     return passwordRegex.test(password)
 }
 
-module.exports = { isValidUrl, isValidCode, isValidPassword, treatUrl }
+export { isValidUrl, isValidCode, isValidPassword, treatUrl }

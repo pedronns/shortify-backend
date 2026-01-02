@@ -1,11 +1,10 @@
-const db = require("../database/models/index")
-const { Link } = db
+import { Link } from "../database/models/Link.js"
 
-async function infoRoute(req, res) {
+export async function infoRoute(req, res) {
     const { code } = req.params
 
     try {
-        const link = await Link.findOne({ where: { code } })
+        const link = await Link.findOne({ code })
         if (!link) return res.status(404).json({ error: "NOT_FOUND" })
 
         res.json({
@@ -17,5 +16,3 @@ async function infoRoute(req, res) {
         res.status(500).json({ error: "Server error" })
     }
 }
-
-module.exports = { infoRoute }

@@ -1,6 +1,6 @@
-const { unlockLink } = require("../services")
+import { unlockLink } from "../services/index.js"
 
-async function unlockRoute(req, res) {
+export async function unlockRoute(req, res) {
     const { password } = req.body
     const { code } = req.params
 
@@ -24,5 +24,3 @@ async function unlockRoute(req, res) {
         return res.status(500).json({ error: "Server error" })
     }
 }
-
-module.exports = { unlockRoute }

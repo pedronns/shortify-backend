@@ -1,48 +1,16 @@
-"use strict"
-const { Model } = require("sequelize")
+import mongoose from "mongoose"
+const { Schema } = mongoose
 
-module.exports = (sequelize, DataTypes) => {
-    class Link extends Model {
-        static associate(models) {
-            // future associations
-        }
-    }
+const linkSchema = new Schema(
+    {
+        url: { type: String, required: true, trim: true },
+        code: { type: String, required: true, unique: true },
+        clicks: { type: Number, default: 0 },
+        passwordHash: String,
+        protected: { type: Boolean, default: false },
+        custom: { type: Boolean, default: false },
+    },
+    { timestamps: true }
+)
 
-    Link.init(
-        {
-            url: {
-                type: DataTypes.TEXT,
-                allowNull: false,
-            },
-            code: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-            },
-            clicks: {
-                type: DataTypes.INTEGER,
-                defaultValue: 0,
-            },
-            passwordHash: {
-                type: DataTypes.STRING(100),
-                allowNull: true,
-            },
-            protected: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            },
-            custom: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            },
-        },
-        {
-            sequelize,
-            modelName: "Link",
-        }
-    )
-
-    return Link
-}
+export const Link = mongoose.model("Link", linkSchema)

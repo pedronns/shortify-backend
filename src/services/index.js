@@ -1,5 +1,5 @@
-const { Link } = require("../database/models/index")
-const bcrypt = require("bcrypt")
+import { Link } from "../database/models/Link.js"
+import bcrypt from "bcrypt"
 
 const API = process.env.API_URL
 
@@ -7,8 +7,8 @@ async function createShortLink(url, code, password, custom) {
     let passwordHash = null
     let isProtected = false
 
-    if(url.includes(API)) {
-        throw new Error("RECURSIVE_LINK");
+    if (url.includes(API)) {
+        throw new Error("RECURSIVE_LINK")
     }
 
     if (password) {
@@ -18,7 +18,9 @@ async function createShortLink(url, code, password, custom) {
 
     if (!custom) {
         const urlTaken = await Link.findOne({
-            where: { url, custom: false, protected: false },
+            url,
+            custom: false,
+            protected: false,
         })
 
         if (urlTaken) {
@@ -31,7 +33,7 @@ async function createShortLink(url, code, password, custom) {
     }
 
     // if custom code, check if it's already taken
-    const codeTaken = await Link.findOne({ where: { code } })
+    const codeTaken = await Link.findOne({ code })
     if (codeTaken) {
         throw new Error("CODE_TAKEN")
     }
@@ -39,7 +41,6 @@ async function createShortLink(url, code, password, custom) {
     const created = await Link.create({
         url,
         code,
-        clicks: 0,
         passwordHash,
         protected: isProtected,
     })
@@ -52,7 +53,7 @@ async function createShortLink(url, code, password, custom) {
 }
 
 async function unlockLink(code, password) {
-    const link = await Link.findOne({ where: { code } })
+    const link = await Link.findOne({ code })
 
     if (!link) {
         throw new Error("NOT_FOUND")
@@ -72,7 +73,7 @@ async function unlockLink(code, password) {
 }
 
 async function handleRedirect(code, password) {
-    const link = await Link.findOne({ where: { code } })
+    const link = await Link.findOne({ code })
 
     if (!link) {
         throw new Error("NOT_FOUND")
@@ -89,9 +90,9 @@ async function handleRedirect(code, password) {
         }
     }
 
-    link.clicks += 1
+    link.clicks++
     await link.save()
     return link.url
 }
 
-module.exports = { handleRedirect, createShortLink, unlockLink }
+export { handleRedirect, createShortLink, unlockLink }

@@ -1,9 +1,9 @@
-const { createShortLink } = require("../services")
-const { isValidUrl, isValidCode, isValidPassword } = require("../validators")
+import { createShortLink } from "../services/index.js"
+import { isValidUrl, isValidCode, isValidPassword } from "../validators/index.js"
 
 const port = process.env.PORT
 
-async function customRoute(req, res) {
+export async function customRoute(req, res) {
     const { url, code, password } = req.body
 
     if (!isValidUrl(url)) {
@@ -30,5 +30,3 @@ async function customRoute(req, res) {
         res.status(500).json({ error: "SERVER_ERROR" })
     }
 }
-
-module.exports = { customRoute }

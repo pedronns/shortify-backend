@@ -1,9 +1,9 @@
-const { isValidUrl, isValidPassword } = require("../validators")
-const { createShortLink } = require("../services")
+import { isValidUrl, isValidPassword } from "../validators/index.js"
+import { createShortLink } from "../services/index.js"
 
 // const port = process.env.PORT
 
-async function randomRoute(req, res) {
+export async function randomRoute(req, res) {
     const { url, password } = req.body
     const code = Math.random().toString(36).slice(2, 10)
 
@@ -23,5 +23,3 @@ async function randomRoute(req, res) {
         res.status(500).json({ error: "SERVER_ERROR" })
     }
 }
-
-module.exports = { randomRoute }

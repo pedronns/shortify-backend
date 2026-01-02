@@ -1,6 +1,6 @@
-const { handleRedirect } = require("../services")
+import { handleRedirect } from "../services/index.js"
 
-async function redirectRoute(req, res) {
+export async function redirectRoute(req, res) {
     const { code } = req.params
     const { password } = req.query
 
@@ -22,5 +22,3 @@ async function redirectRoute(req, res) {
         return res.status(500).json({ error: "Server error" })
     }
 }
-
-module.exports = { redirectRoute }

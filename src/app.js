@@ -1,21 +1,26 @@
-require("dotenv").config()
-const express = require("express")
-const cors = require("cors")
-const { json } = require("express")
+import dotenv from 'dotenv'
+import express from "express"
+import cors from "cors"
+import { json } from "express"
 
-const { randomRoute } = require("./routes/random.js")
-const { customRoute } = require("./routes/custom.js")
-const { unlockRoute } = require("./routes/unlock.js")
-const { deleteRoute } = require("./routes/delete.js")
-const { infoRoute } = require("./routes/info.js")
-const { redirectRoute } = require("./routes/redirect.js")
+import { connectDatabase } from "./database/index.js"
+
+import { randomRoute } from "./routes/random.js"
+import { customRoute } from "./routes/custom.js"
+import { unlockRoute } from "./routes/unlock.js"
+import { deleteRoute } from "./routes/delete.js"
+import { infoRoute } from "./routes/info.js"
+import { redirectRoute } from "./routes/redirect.js"
 
 const origin = process.env.FRONTEND_URL
 
+dotenv.config()
 const app = express()
 
 app.use("/", cors())
 app.use(json())
+
+await connectDatabase()
 
 const port = process.env.PORT
 

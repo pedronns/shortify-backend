@@ -1,26 +1,25 @@
-require('dotenv').config();
+import dotenv from "dotenv"
+dotenv.config()
 
-module.exports = {
-  development: {
+export const development = {
     username: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
     host: process.env.PGHOST,
     port: process.env.PGPORT || 5432,
-    dialect: 'postgres',
+    dialect: "postgres",
     dialectOptions: {
-      ssl: { require: true, rejectUnauthorized: false },
+        ssl: { require: true, rejectUnauthorized: false },
     },
-  },
-  production: {
+}
+export const production = {
     username: process.env.PGUSER,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
     host: process.env.PGHOST,
     port: process.env.PGPORT || 5432,
-    dialect: 'postgres',
+    dialect: "postgres",
     dialectOptions: {
-      ssl: { require: true, rejectUnauthorized: false },
+        ssl: { require: true, rejectUnauthorized: false },
     },
-  },
-};
+}
