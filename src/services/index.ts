@@ -28,11 +28,11 @@ async function createShortLink(
         isProtected = true
     }
 
-    if (!custom) {
+    if (!custom && !isProtected) {
         const urlTaken = await LinkModel.findOne({
             url,
             custom: false,
-            protected: false,
+            protected: isProtected,
         })
 
         if (urlTaken) {
@@ -55,6 +55,7 @@ async function createShortLink(
         code,
         passwordHash,
         protected: isProtected,
+        custom,
     })
 
     return {
