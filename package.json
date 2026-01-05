@@ -7,7 +7,7 @@
         "mongoose": "^9.1.0"
     },
     "scripts": {
-        "dev": "NODE_ENV=development node --loader ts-node/esm src/app.ts",
+        "dev": "cross-env NODE_ENV=development node --loader ts-node/esm src/app.ts",
         "build": "tsc",
         "start": "node dist/app.js"
     },
@@ -24,6 +24,7 @@
         "@types/cors": "^2.8.19",
         "@types/express": "^5.0.6",
         "@types/node": "^25.0.3",
+        "cross-env": "^10.1.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.3"
     }

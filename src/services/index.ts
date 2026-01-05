@@ -1,9 +1,8 @@
 import { LinkModel } from "../database/models/link.ts"
-import type { Link } from "../types/link.ts"
+import type { Link, RedirectResult } from "../types/index.ts"
 import bcrypt from "bcrypt"
 
 import { env } from "../config/env.ts"
-
 
 const API = env.apiUrl
 
@@ -85,10 +84,7 @@ async function unlockLink(code: string, password?: string): Promise<string> {
     return link.url
 }
 
-async function handleRedirect(
-    code: string,
-    password?: string
-): Promise<string> {
+async function handleRedirect(code: string): Promise<RedirectResult> {
     const link = await LinkModel.findOne({ code })
 
     if (!link) {
@@ -96,17 +92,12 @@ async function handleRedirect(
     }
 
     if (link.protected) {
-        if (!password || !link.passwordHash) throw new Error("NEED_PASSWORD")
-
-        const match = bcrypt.compare(password, link.passwordHash)
-        if (!match) {
-            throw new Error("INVALID_PASSWORD")
-        }
+        return { protected: true }
     }
 
     link.clicks++
     await link.save()
-    return link.url
+    return { protected: false, url: link.url }
 }
 
 export { handleRedirect, createShortLink, unlockLink }

@@ -22,8 +22,7 @@ function isValidCode(code: string) {
 }
 
 function isValidPassword(password: string) {
-    const passwordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,50}$/
+    const passwordRegex = /^.{8,50}$/
     return passwordRegex.test(password)
 }
 

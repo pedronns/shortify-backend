@@ -6,3 +6,7 @@ export interface Link {
     protected: boolean
     custom?: boolean
 }
+
+export type RedirectResult =
+  | { protected: true }
+  | { protected: false; url: string }
