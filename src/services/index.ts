@@ -2,7 +2,10 @@ import { LinkModel } from "../database/models/link.ts"
 import type { Link } from "../types/link.ts"
 import bcrypt from "bcrypt"
 
-const API = process.env.API_URL
+import { env } from "../config/env.ts"
+
+
+const API = env.apiUrl
 
 if (!API) {
     throw new Error("UNDEFINED_URL")

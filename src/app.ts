@@ -12,9 +12,10 @@ import { deleteController } from "./controllers/delete.ts"
 import { infoController } from "./controllers/info.ts"
 import { redirectController } from "./controllers/redirect.ts"
 
-const origin = process.env.FRONTEND_URL || ''
+import { env } from "./config/env.ts"
 
-dotenv.config()
+const origin = env.frontendUrl || ''
+
 const app = express()
 
 app.use("/", cors())
@@ -22,11 +23,9 @@ app.use(json())
 
 await connectDatabase()
 
-const port = process.env.PORT
-
 //
 app.get("/", (req, res) => {
-    res.redirect(origin)
+    res.send('API returns OK')
 })
 
 // Create link with random code
@@ -45,6 +44,6 @@ app.get("/info/:code", infoController)
 
 app.delete("/:code", deleteController)
 
-app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`)
+app.listen(env.port, () => {
+    console.log(`Server is listening on port ${env.port}`)
 })
