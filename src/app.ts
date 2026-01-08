@@ -23,22 +23,17 @@ app.use(json())
 
 await connectDatabase()
 
-//
 app.get("/", (req, res) => {
     res.send('API returns OK')
 })
 
-// Create link with random code
 app.post("/random", randomController)
 
-// create link with custom code
 app.post("/custom", customController)
 
-// checks if the link exists and if it's protected
 app.get("/info/:code", infoController)
 app.post("/:code/unlock", unlockController)
 
-// redirecting Controller
 app.get("/:code", redirectController)
 
 app.delete("/:code", deleteController)

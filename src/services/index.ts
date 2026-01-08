@@ -44,7 +44,6 @@ async function createShortLink(
         }
     }
 
-    // if custom code, check if it's already taken
     const codeTaken = await LinkModel.findOne({ code })
     if (codeTaken) {
         throw new Error("CODE_TAKEN")
