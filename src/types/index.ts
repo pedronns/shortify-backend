@@ -1,11 +1,20 @@
 export interface Link {
     url: string
     code: string
-    clicks?: number
-    passwordHash?: string
+    passwordHash?: string | null
     protected: boolean
     custom?: boolean
+    clicks?: number
 }
+
+export interface CreateLinkData {
+    url: string,
+    code: string,
+    password?: string,
+    custom: boolean,
+    protected: boolean
+}
+
 
 export type RedirectResult =
   | { protected: true }

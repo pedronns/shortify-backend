@@ -1,8 +1,8 @@
-import dotenv from 'dotenv'
-import express from "express"
 import cors from "cors"
-import { json } from "express"
+import dotenv from "dotenv"
+import express, { json } from "express"
 
+import { env } from "./config/env.ts"
 import { connectDatabase } from "./database/index.ts"
 
 import { randomController } from "./controllers/random.ts"
@@ -12,30 +12,32 @@ import { deleteController } from "./controllers/delete.ts"
 import { infoController } from "./controllers/info.ts"
 import { redirectController } from "./controllers/redirect.ts"
 
-import { env } from "./config/env.ts"
+import { validateLink } from "./middlewares/validation.ts"
+import { createLinkLimiter, generalLimiter } from "./middlewares/rateLimit.ts"
 
-const origin = env.frontendUrl || ''
+dotenv.config()
 
 const app = express()
 
+app.set('trust proxy', 1)
+
 app.use("/", cors())
 app.use(json())
+app.use(generalLimiter)
 
 await connectDatabase()
 
-app.get("/", (req, res) => {
-    res.send('API returns OK')
+app.get("/", (_req, res) => {
+    res.send("API returns OK")
 })
 
-app.post("/random", randomController)
-
-app.post("/custom", customController)
+app.post("/random", createLinkLimiter, validateLink, randomController)
+app.post("/custom", createLinkLimiter, validateLink, customController)
 
 app.get("/info/:code", infoController)
 app.post("/:code/unlock", unlockController)
 
 app.get("/:code", redirectController)
-
 app.delete("/:code", deleteController)
 
 app.listen(env.port, () => {

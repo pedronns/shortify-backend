@@ -1,25 +1,21 @@
-import { isValidUrl, isValidPassword } from "../validators/index.ts"
-import { createShortLink } from "../services/index.ts"
-
 import type { Request, Response } from "express"
+import { LinkService } from "../services/linkService.ts"
+import { LinkRepository } from "../repositories/linkRepository.ts"
+
+const linkService = new LinkService(new LinkRepository())
 
 export async function randomController(req: Request, res: Response) {
-    const { url, password } = req.body
     const code = Math.random().toString(36).slice(2, 10)
-
-    if (!isValidUrl(url)) {
-        return res.status(400).json({ error: "Invalid URL" })
-    }
-
-    if (password && !isValidPassword(password)) {
-        return res.status(400).json({ error: "Invalid password format" })
-    }
+    const data = { ...req.body, code, custom: false }
 
     try {
-        const shortLink = await createShortLink(url, code, password, false)
-        res.status(201).json(shortLink)
-    } catch (error) {
-        console.error(`Error creating random link: ${error}`)
-        res.status(500).json({ error: "SERVER_ERROR" })
+        const shortLink = await linkService.createLink(data)
+        return res.status(201).json(shortLink)
+    } catch (err) {
+        if (err instanceof Error) {
+            return res.status(400).json({ error: err.message })
+        }
+
+        return res.status(500).json({ error: "INTERNAL_SERVER_ERROR" })
     }
 }
