@@ -14,21 +14,23 @@ import { redirectController } from "./controllers/redirect.ts"
 
 import { validateLink } from "./middlewares/validation.ts"
 import { createLinkLimiter, generalLimiter } from "./middlewares/rateLimit.ts"
+import { errorHandler } from "./middlewares/errorHandler.ts"
 
 dotenv.config()
 
-const app = express()
+const app = express() 
 
 app.set('trust proxy', 1)
 
 app.use("/", cors())
 app.use(json())
+app.use(errorHandler)
 app.use(generalLimiter)
 
 await connectDatabase()
 
 app.get("/", (_req, res) => {
-    res.send("API returns OK")
+    res.send("Shortify returns OK")
 })
 
 app.post("/random", createLinkLimiter, validateLink, randomController)

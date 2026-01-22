@@ -12,9 +12,15 @@ export interface CreateLinkData {
     code: string,
     password?: string,
     custom: boolean,
-    protected: boolean
 }
 
+export type CreateLinkPersistence = {
+    url: string
+    code: string
+    passwordHash: string | null
+    protected: boolean
+    custom: boolean
+}
 
 export type RedirectResult =
   | { protected: true }

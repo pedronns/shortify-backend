@@ -1,6 +1,6 @@
 import { LinkModel } from "../database/models/link.ts"
 import type { Link } from "../types/index.ts"
-import type { CreateLinkData } from "../types/index.ts"
+import type { CreateLinkPersistence } from "../types/index.ts"
 
 export class LinkRepository {
     async findByCode(code: string): Promise<Link | null> {
@@ -15,7 +15,7 @@ export class LinkRepository {
         })
     }
 
-    async create(data: CreateLinkData): Promise<Link> {
+    async create(data: CreateLinkPersistence): Promise<Link> {
         return LinkModel.create(data)
     }
 

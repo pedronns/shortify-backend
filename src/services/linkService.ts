@@ -2,9 +2,16 @@ import { LinkRepository } from "../repositories/linkRepository.ts"
 import { PasswordUtils } from "../utils/passwordUtils.ts"
 import { Link, CreateLinkData, RedirectResult } from "../types/index.ts"
 import { env } from "../config/env.ts"
+import {
+    ConflictError,
+    ValidationError,
+    NotFoundError,
+} from "../errors/index.ts"
+
+import { AppError } from "../errors/AppError.ts"
 
 const API = env.apiUrl
-if (!API) throw new Error("UNDEFINED_URL")
+if (!API) throw new AppError("UNDEFINED_URL", 500)
 
 export class LinkService {
     constructor(private linkRepository: LinkRepository) {}
@@ -12,36 +19,30 @@ export class LinkService {
     async createLink(linkData: CreateLinkData): Promise<Link> {
         const { url, code, password, custom } = linkData
 
-        if (url.includes(API)) throw new Error("RECURSIVE_LINK")
+        if (url.includes(API)) throw new ValidationError("RECURSIVE_LINK")
 
-        let passwordHash: string | null = null
-        let isProtected = false
-
-        if (password) {
-            passwordHash = await PasswordUtils.hash(password)
-            isProtected = true
-        }
+        const isProtected = Boolean(password)
+        const passwordHash = password
+            ? await PasswordUtils.hash(password)
+            : null
 
         if (!custom && !isProtected) {
             const existing = await this.linkRepository.findByUrl(url)
             if (existing) {
-                return {
-                    url: existing.url,
-                    code: existing.code,
-                    protected: existing.protected,
-                }
+                return existing
             }
         }
 
-        const codeTaken = await this.linkRepository.findByCode(code)
-        if (codeTaken) {
-            throw new Error("CODE_TAKEN")
+        const existingLink = await this.linkRepository.findByCode(code)
+        if (existingLink) {
+            // TODO: CHECK EXPIRED LINKS
+            throw new ConflictError("CODE_TAKEN")
         }
 
         return await this.linkRepository.create({
             url,
             code,
-            password,
+            passwordHash,
             protected: isProtected,
             custom,
         })
@@ -51,7 +52,7 @@ export class LinkService {
         const link = await this.linkRepository.findByCode(code)
 
         if (!link) {
-            throw new Error("NOT_FOUND")
+            throw new NotFoundError("NOT_FOUND")
         }
 
         return {
@@ -62,11 +63,12 @@ export class LinkService {
 
     async unlockLink(code: string, password?: string): Promise<string> {
         const link = await this.linkRepository.findByCode(code)
-        if (!link) throw new Error("NOT_FOUND")
-        if (!link.passwordHash || !password) throw new Error("NOT_PROTECTED")
+        if (!link) throw new NotFoundError("NOT_FOUND")
+        if (!link.passwordHash || !password)
+            throw new ValidationError("NOT_PROTECTED")
 
         const match = await PasswordUtils.compare(password, link.passwordHash)
-        if (!match) throw new Error("INVALID_PASSWORD")
+        if (!match) throw new ValidationError("INVALID_PASSWORD")
 
         return link.url
     }
@@ -75,13 +77,13 @@ export class LinkService {
         const deleted = await this.linkRepository.deleteByCode(code)
 
         if (!deleted) {
-            throw new Error("NOT_FOUND")
+            throw new NotFoundError("NOT_FOUND")
         }
     }
 
     async handleRedirect(code: string): Promise<RedirectResult> {
         const link = await this.linkRepository.findByCode(code)
-        if (!link) throw new Error("NOT_FOUND")
+        if (!link) throw new NotFoundError("NOT_FOUND")
         if (link.protected) return { protected: true }
 
         await this.linkRepository.incrementClicks(code)
