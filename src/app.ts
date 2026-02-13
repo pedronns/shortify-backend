@@ -29,7 +29,7 @@ app.use(generalLimiter)
 
 await connectDatabase()
 
-app.get("/", (_req, res) => {
+app.get("/health", (_req, res) => {
     res.send("Shortify returns OK")
 })
 
