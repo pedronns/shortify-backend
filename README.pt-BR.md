@@ -2,6 +2,8 @@
 
 API de encurtador de links simples, rápida e segura desenvolvida com **Node.js**, **Express** e **MongoDB**.
 
+Live demo: https://shortify-6s8t.vercel.app/
+
 ---
 
 ## Funcionalidades
