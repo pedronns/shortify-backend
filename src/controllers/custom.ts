@@ -1,38 +1,23 @@
-import { createShortLink } from "../services/index.ts"
 import type { Request, Response } from "express"
+import { LinkService } from "../services/linkService.ts"
+import { LinkRepository } from "../repositories/linkRepository.ts"
 
-import {
-    isValidUrl,
-    isValidCode,
-    isValidPassword,
-} from "../validators/index.ts"
+const linkService = new LinkService(new LinkRepository())
 
 export async function customController(req: Request, res: Response) {
-    const { url, code, password } = req.body
-
-    if (!isValidUrl(url)) {
-        return res.status(400).json({ error: "INVALID_URL" })
-    }
-
-    if (!isValidCode(code)) {
-        return res.status(400).json({ error: "INVALID_CODE_FORMAT" })
-    }
-
-    if (password && !isValidPassword(password)) {
-        return res.status(400).json({ error: "INVALID_PASSWORD_FORMAT" })
-    }
+    const data = { ...req.body, custom: true }
 
     try {
-        const shortLink = await createShortLink(url, code, password, true)
-        res.status(201).json(shortLink)
+        const shortLink = await linkService.createLink(data)
+        return res.status(201).json(shortLink)
     } catch (err) {
         if (err instanceof Error) {
             if (err.message === "CODE_TAKEN") {
                 return res.status(409).json({ error: "CODE_TAKEN" })
             }
+            return res.status(400).json({ error: err.message })
         }
 
-        console.error("Error creating custom link:", err)
         res.status(500).json({ error: "SERVER_ERROR" })
     }
 }

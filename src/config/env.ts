@@ -2,6 +2,8 @@ import dotenv from "dotenv"
 
 const NODE_ENV = process.env.NODE_ENV || "development"
 
+process.env.NODE_ENV = NODE_ENV
+
 dotenv.config({
   path: `.env.${NODE_ENV}`
 })
@@ -19,5 +21,5 @@ export const env = {
   port: Number(process.env.PORT) || 3000,
   frontendUrl: requireEnv("FRONTEND_URL"),
   mongoUri: requireEnv("MONGO_URI"),
-  apiUrl: requireEnv('API_URL')
+  apiUrl: requireEnv("API_URL"),
 }

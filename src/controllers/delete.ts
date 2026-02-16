@@ -1,5 +1,8 @@
-import { LinkModel } from "../database/models/link.ts"
 import type { Request, Response } from "express"
+import { LinkService } from "../services/linkService.ts"
+import { LinkRepository } from "../repositories/linkRepository.ts"
+
+const linkService = new LinkService(new LinkRepository())
 
 export async function deleteController(req: Request, res: Response) {
     const { code } = req.params
@@ -9,17 +12,13 @@ export async function deleteController(req: Request, res: Response) {
     }
 
     try {
-        const result = await LinkModel.deleteOne({ code })
-
-        if (result.deletedCount === 0) {
-            return res.status(404).json({ error: "Link not found" })
-        }
-
+        await linkService.deleteLink(code)
         return res.sendStatus(204)
     } catch (error) {
-        console.error(`Error deleting link: ${error}`)
-        return res
-            .status(500)
-            .json({ error: "Error deleting the specified link" })
+        if (error instanceof Error && error.message === "NOT_FOUND") {
+            return res.status(404).json({ error: "NOT_FOUND" })
+        }
+
+        return res.status(500).json({ error: "SERVER_ERROR" })
     }
 }

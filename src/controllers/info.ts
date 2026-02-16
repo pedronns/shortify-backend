@@ -1,23 +1,25 @@
-import { LinkModel } from "../database/models/link.ts"
 import type { Request, Response } from "express"
+import { LinkService } from "../services/linkService.ts"
+import { LinkRepository } from "../repositories/linkRepository.ts"
+
+const linkService = new LinkService(new LinkRepository())
 
 export async function infoController(req: Request, res: Response) {
     const { code } = req.params
 
     if (!code) {
-        return res.status(400).json({ error: "Code is required" })
+        return res.status(400).json({ error: "CODE_REQUIRED" })
     }
 
     try {
-        const link = await LinkModel.findOne({ code })
-        if (!link) return res.status(404).json({ error: "NOT_FOUND" })
+        const info = await linkService.getLinkInfo(code)
+        return res.status(200).json(info)
+    } catch (error) {
+        if (error instanceof Error && error.message === "NOT_FOUND") {
+            return res.status(404).json({ error: "NOT_FOUND" })
+        }
 
-        res.json({
-            protected: link.protected,
-            url: link.protected ? null : link.url,
-        })
-    } catch (err) {
-        console.error(err)
-        res.status(500).json({ error: "Server error" })
+        console.error("Error fetching link info:", error)
+        return res.status(500).json({ error: "SERVER_ERROR" })
     }
 }

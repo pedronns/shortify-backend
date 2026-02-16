@@ -1,39 +1,42 @@
-import { unlockLink } from "../services/index.ts"
 import type { Request, Response } from "express"
+import { LinkService } from "../services/linkService.ts"
+import { LinkRepository } from "../repositories/linkRepository.ts"
+
+const linkService = new LinkService(new LinkRepository())
 
 export async function unlockController(req: Request, res: Response) {
-    const { password } = req.body
     const { code } = req.params
+    const { password } = req.body
 
     if (!code) {
-        return res.status(400).json({ error: "Code required" })
+        return res.status(400).json({ error: "CODE_REQUIRED" })
     }
 
-    if (password && typeof password !== "string") {
-        return res.status(400).json({ error: "Invalid password format" })
+    if (!password || typeof password !== "string") {
+        return res.status(400).json({ error: "PASSWORD_REQUIRED" })
     }
 
     try {
-        const url = await unlockLink(code, password)
+        const url = await linkService.unlockLink(code, password)
         return res.status(200).json({ url })
     } catch (error) {
         if (error instanceof Error) {
-            if (error.message === "NOT_FOUND") {
-                return res.status(404).json({ error: "Link not found" })
-            }
+            switch (error.message) {
+                case "NOT_FOUND":
+                    return res.status(404).json({ error: "NOT_FOUND" })
 
-            if (error.message === "NOT_PROTECTED") {
-                return res
-                    .status(400)
-                    .json({ error: "This link is not protected" })
-            }
+                case "NOT_PROTECTED":
+                    return res
+                        .status(409)
+                        .json({ error: "NOT_PROTECTED" })
 
-            if (error.message === "INVALID_PASSWORD") {
-                return res.status(401).json({ error: "Invalid password" })
+                case "INVALID_PASSWORD":
+                    return res.status(401).json({ error: "INVALID_PASSWORD" })
             }
         }
 
-        console.error(`Failed to unlock: ${error}`)
-        return res.status(500).json({ error: "Server error" })
+        console.error("Failed to unlock:", error)
+        return res.status(500).json({ error: "SERVER_ERROR" })
     }
 }
+

@@ -1,8 +1,8 @@
-import dotenv from 'dotenv'
-import express from "express"
 import cors from "cors"
-import { json } from "express"
+import dotenv from "dotenv"
+import express, { json } from "express"
 
+import { env } from "./config/env.ts"
 import { connectDatabase } from "./database/index.ts"
 
 import { randomController } from "./controllers/random.ts"
@@ -12,36 +12,34 @@ import { deleteController } from "./controllers/delete.ts"
 import { infoController } from "./controllers/info.ts"
 import { redirectController } from "./controllers/redirect.ts"
 
-import { env } from "./config/env.ts"
+import { validateLink } from "./middlewares/validation.ts"
+import { createLinkLimiter, generalLimiter } from "./middlewares/rateLimit.ts"
+import { errorHandler } from "./middlewares/errorHandler.ts"
 
-const origin = env.frontendUrl || ''
+dotenv.config()
 
-const app = express()
+const app = express() 
+
+app.set('trust proxy', 1)
 
 app.use("/", cors())
 app.use(json())
+app.use(errorHandler)
+app.use(generalLimiter)
 
 await connectDatabase()
 
-//
-app.get("/", (req, res) => {
-    res.send('API returns OK')
+app.get("/health", (_req, res) => {
+    res.send("Shortify returns OK")
 })
 
-// Create link with random code
-app.post("/random", randomController)
+app.post("/random", createLinkLimiter, validateLink, randomController)
+app.post("/custom", createLinkLimiter, validateLink, customController)
 
-// create link with custom code
-app.post("/custom", customController)
-
-// redirecting Controller
-app.get("/:code", redirectController)
-
+app.get("/info/:code", infoController)
 app.post("/:code/unlock", unlockController)
 
-// checks if the link exists and if it's protected
-app.get("/info/:code", infoController)
-
+app.get("/:code", redirectController)
 app.delete("/:code", deleteController)
 
 app.listen(env.port, () => {
