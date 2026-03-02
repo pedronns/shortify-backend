@@ -2,6 +2,8 @@
 
 A simple, fast, and secure URL shortener API built with **Node.js**, **Express**, and **MongoDB**.
 
+Live demo: https://shortify-6s8t.vercel.app/
+
 ---
 
 ## Features
