@@ -1,8 +1,8 @@
 # Shortify
 
-## Índice
-- [Português](#português)
-- [English](#english)
+**Idiomas / Languages:**
+- [ Português](#português)
+- [ English](#english)
 
 ---
 
