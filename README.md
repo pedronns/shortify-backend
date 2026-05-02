@@ -1,6 +1,16 @@
+# Shortify
+
+## Índice
+- [Português](#português)
+- [English](#english)
+
+---
+
+## Português
+
 # Shortify (Backend)
 
-API de encurtador de links simples, rápida e segura desenvolvida com **Node.js**, **Express** e **MongoDB**.
+API encurtadora de links simples, rápida e segura desenvolvida com **Node.js**, **Express** e **MongoDB**.
 
 Live demo: https://shortify-6s8t.vercel.app/
 
@@ -73,11 +83,15 @@ O servidor será iniciado na porta configurada nas variáveis de ambiente.
 ## Endpoints
 
 ### GET /health
-Health check da aplicação.
+Verifica a saúde da aplicação.
 
-**Resposta:**
-```
-Shortify returns OK
+**Response (200):**
+```json
+{
+  "status": "ok",
+  "uptime": 123.45,
+  "timestamp": "2026-05-02T00:00:00.000Z"
+}
 ```
 
 ---
@@ -158,7 +172,7 @@ Se o link for protegido, `url` retornará `null`.
 ---
 
 ### GET /:code
-Acessa/redireciona para o link encurtado.
+Acessa o link encurtado.
 
 **Response (200) - Link desbloqueado:**
 ```json
@@ -173,6 +187,8 @@ Acessa/redireciona para o link encurtado.
   "error": "PASSWORD_REQUIRED"
 }
 ```
+
+**Response (404)** - NOT_FOUND
 
 ---
 
@@ -295,34 +311,262 @@ A API implementa rate limiting em duas camadas:
 
 Isso previne abuso de recursos.
 
-Parâmetros: - code (string)
+---
+
+## Licença
+
+MIT
 
 ---
 
-### POST /:code/unlock
+## English
 
-Valida a senha de um link protegido.
+# Shortify (Backend)
 
-Parâmetros: - code (string)
+A simple, fast, and secure URL shortener API built with **Node.js**, **Express**, and **MongoDB**.
+
+Live demo: https://shortify-6s8t.vercel.app/
+
+---
+
+## Features
+
+- ✨ Random link generation (Base36 - 8 characters)
+- 🔗 Custom links with user-defined codes
+- 🔐 Password protection with bcrypt hashing
+- ✅ URL validation
+- 🚫 Recursive link prevention
+- ⚡ Rate limiting for link creation
+- 🗄️ MongoDB persistence
+
+---
+
+## Tech Stack
+
+- **Runtime**: Node.js
+- **Framework**: Express v5
+- **Database**: MongoDB with Mongoose
+- **Language**: TypeScript
+- **Authentication**: bcrypt for password hashing
+- **Validation**: Joi
+- **Rate Limiting**: express-rate-limit
+- **CORS**: Enabled
+
+---
+
+## Installation
+
+### Prerequisites
+- Node.js (v18+)
+- MongoDB
+
+### Setup
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Configure environment variables (create `.env.development` and `.env.production`):
+```env
+PORT=3000
+FRONTEND_URL=http://localhost:5173
+MONGO_URI=mongodb://localhost:27017/shortify
+API_URL=http://localhost:3000
+NODE_ENV=development
+```
+
+3. Start the server:
+
+**Development (with watch mode):**
+```bash
+npm run dev
+```
+
+**Production:**
+```bash
+npm run build
+npm start
+```
+
+The server will start on the port configured in your environment variables.
+
+---
+
+## Endpoints
+
+### GET /health
+Application health check.
+
+**Response (200):**
+```json
+{
+  "status": "ok",
+  "uptime": 123.45,
+  "timestamp": "2026-05-02T00:00:00.000Z"
+}
+```
+
+---
+
+### POST /random
+Creates a link with an automatically generated Base36 code.
+
+**Body:**
+```json
+{
+  "url": "https://example.com/long-page",
+  "password": "optional"
+}
+```
+
+**Response (201):**
+```json
+{
+  "_id": "...",
+  "url": "https://example.com/long-page",
+  "code": "a1b2c3d4",
+  "custom": false,
+  "protected": false,
+  "clicks": 0,
+  "createdAt": "..."
+}
+```
+
+**Middlewares**: createLinkLimiter, validateLink
+
+---
+
+### POST /custom
+Creates a link with a custom code.
+
+**Body:**
+```json
+{
+  "url": "https://example.com/page",
+  "code": "my-link",
+  "password": "optional"
+}
+```
+
+**Response (201):**
+```json
+{
+  "_id": "...",
+  "url": "https://example.com/page",
+  "code": "my-link",
+  "custom": true,
+  "protected": false,
+  "clicks": 0,
+  "createdAt": "..."
+}
+```
+
+**Response (409):** CODE_TAKEN - Code already in use
+
+**Middlewares**: createLinkLimiter, validateLink
+
+---
+
+### GET /info/:code
+Returns public information for a shortened link.
+
+**Response (200):**
+```json
+{
+  "protected": false,
+  "url": "https://example.com/page",
+  "clicks": 5
+}
+```
+
+If the link is protected, `url` will be `null`.
 
 ---
 
 ### GET /:code
+Accesses the shortened link.
 
-Redireciona para a URL original associada ao código.
+**Response (200) - Unlocked link:**
+```json
+{
+  "originalUrl": "https://example.com/page"
+}
+```
 
-Parâmetros: - code (string)
+**Response (401) - Protected link:**
+```json
+{
+  "error": "PASSWORD_REQUIRED"
+}
+```
+
+**Response (404)** - NOT_FOUND
+
+---
+
+### POST /:code/unlock
+Unlocks a password-protected link.
+
+**Body:**
+```json
+{
+  "password": "link-password"
+}
+```
+
+**Response (200):**
+```json
+{
+  "url": "https://example.com/page"
+}
+```
+
+**Error responses:**
+- `404` - NOT_FOUND
+- `409` - NOT_PROTECTED (link is not password protected)
+- `401` - INVALID_PASSWORD
 
 ---
 
 ### DELETE /:code
+Deletes a shortened link.
 
-Remove o link encurtado.
+**Response (204):** No Content
 
-Parâmetros: - code (string)
+**Response (404):** NOT_FOUND
 
 ---
 
-## Licença
+## Error Handling
+
+The API uses standard HTTP status codes for success and error states:
+
+| Code | Meaning |
+|------|---------|
+| 200 | OK |
+| 201 | Created |
+| 204 | No Content |
+| 400 | Bad Request |
+| 401 | Unauthorized |
+| 404 | Not Found |
+| 409 | Conflict |
+| 500 | Internal Server Error |
+
+---
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `PORT` | Server port (default: 3000) |
+| `FRONTEND_URL` | Frontend URL for CORS |
+| `MONGO_URI` | MongoDB connection URI |
+| `API_URL` | API base URL for recursive validation |
+| `NODE_ENV` | Environment (development/production) |
+
+---
+
+## License
 
 MIT
